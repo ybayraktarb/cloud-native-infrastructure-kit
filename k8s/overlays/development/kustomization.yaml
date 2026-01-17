@@ -1,0 +1,42 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - Development Overlay
+# =============================================================================
+# Development-specific customizations with minimal resources.
+# =============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cloud-native-ops
+
+resources:
+  - ../../base
+
+# Development-specific labels
+commonLabels:
+  environment: development
+
+# Single replica for development
+replicas:
+  - name: cloud-native-ops-api
+    count: 1
+
+# Development resource limits (minimal)
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cloud-native-ops-api
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api
+                resources:
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+                  limits:
+                    cpu: 200m
+                    memory: 128Mi

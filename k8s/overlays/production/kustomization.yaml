@@ -1,0 +1,47 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - Production Overlay
+# =============================================================================
+# Production-specific customizations applied on top of the base manifests.
+# =============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cloud-native-ops
+
+resources:
+  - ../../base
+
+# Production-specific labels
+commonLabels:
+  environment: production
+
+# Image override with production tag
+images:
+  - name: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloud-native-ops-dev
+    newTag: latest
+
+# Production replica count
+replicas:
+  - name: cloud-native-ops-api
+    count: 3
+
+# Production resource limits
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cloud-native-ops-api
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api
+                resources:
+                  requests:
+                    cpu: 250m
+                    memory: 256Mi
+                  limits:
+                    cpu: 1000m
+                    memory: 512Mi

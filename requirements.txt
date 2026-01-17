@@ -1,0 +1,18 @@
+# Cloud-Native-Ops-Starter Dependencies
+# Strictly pinned versions for reproducible builds
+
+# Web Framework
+fastapi==0.109.2
+
+# ASGI Server
+uvicorn[standard]==0.27.1
+
+# Pydantic for data validation (FastAPI dependency)
+pydantic==2.6.1
+
+# HTTP client for external service communication
+httpx==0.26.0
+
+# Additional production dependencies
+python-multipart==0.0.9
+python-dotenv==1.0.1

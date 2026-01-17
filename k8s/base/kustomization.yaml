@@ -1,0 +1,23 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - Kustomization
+# =============================================================================
+# Base kustomization that aggregates all resources.
+# Environment-specific overlays extend this base.
+# =============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cloud-native-ops
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/part-of: cloud-native-ops
+
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+

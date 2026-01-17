@@ -1,0 +1,99 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - ArgoCD Application
+# =============================================================================
+# GitOps Application manifest that tells ArgoCD how to deploy the application.
+# ArgoCD continuously monitors the Git repository and syncs changes to EKS.
+# =============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloud-native-ops-api
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: cloud-native-ops-api
+    app.kubernetes.io/part-of: cloud-native-ops
+    app.kubernetes.io/managed-by: argocd
+  # Finalizer ensures proper cleanup when the Application is deleted
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # ---------------------------------------------------------------------------
+  # Project Configuration
+  # ---------------------------------------------------------------------------
+  project: default
+
+  # ---------------------------------------------------------------------------
+  # Source Repository Configuration
+  # ---------------------------------------------------------------------------
+  source:
+    # GitHub repository URL
+    repoURL: https://github.com/ybayraktarb/cloud-native-infrastructure-kit.git
+    
+    # Branch to track (HEAD of main)
+    targetRevision: HEAD
+    
+    # Path to Kustomize manifests within the repository
+    path: k8s/overlays/production
+    
+    # Kustomize-specific configuration
+    kustomize:
+      # Override images dynamically (can be updated by CI)
+      images:
+        - ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloud-native-ops-dev:latest
+
+  # ---------------------------------------------------------------------------
+  # Destination Cluster Configuration
+  # ---------------------------------------------------------------------------
+  destination:
+    # In-cluster deployment (ArgoCD runs on the same EKS cluster)
+    server: https://kubernetes.default.svc
+    
+    # Target namespace for deployment
+    namespace: cloud-native-ops
+
+  # ---------------------------------------------------------------------------
+  # Sync Policy - GitOps Automation
+  # ---------------------------------------------------------------------------
+  syncPolicy:
+    # Automated sync configuration
+    automated:
+      # Automatically sync when Git changes are detected
+      prune: true
+      # Automatically fix drift (when cluster state differs from Git)
+      selfHeal: true
+      # Allow empty resources (for initial deployments)
+      allowEmpty: false
+
+    # Sync options
+    syncOptions:
+      # Create namespace if it doesn't exist
+      - CreateNamespace=true
+      # Validate manifests before applying
+      - Validate=true
+      # Use server-side apply for better conflict resolution
+      - ServerSideApply=true
+      # Prune resources that are no longer in Git
+      - PruneLast=true
+      # Apply out-of-sync resources only
+      - ApplyOutOfSyncOnly=true
+
+    # Retry policy for failed syncs
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # ---------------------------------------------------------------------------
+  # Health & Rollback Configuration
+  # ---------------------------------------------------------------------------
+  revisionHistoryLimit: 10
+
+  # Ignore differences that are expected (e.g., autoscaler changes)
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

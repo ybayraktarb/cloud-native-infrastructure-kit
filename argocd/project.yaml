@@ -1,0 +1,58 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - ArgoCD Project
+# =============================================================================
+# AppProject defines boundaries and permissions for ArgoCD Applications.
+# =============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cloud-native-ops
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: cloud-native-ops
+spec:
+  description: Cloud-Native-Ops-Starter Project
+
+  # ---------------------------------------------------------------------------
+  # Source Repositories
+  # ---------------------------------------------------------------------------
+  sourceRepos:
+    - https://github.com/cloud-native-ops/starter.git
+    - https://github.com/cloud-native-ops/*
+
+  # ---------------------------------------------------------------------------
+  # Destination Clusters and Namespaces
+  # ---------------------------------------------------------------------------
+  destinations:
+    - namespace: cloud-native-ops
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+
+  # ---------------------------------------------------------------------------
+  # Cluster Resource Whitelist
+  # ---------------------------------------------------------------------------
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+
+  # ---------------------------------------------------------------------------
+  # Namespace Resource Blacklist
+  # ---------------------------------------------------------------------------
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+
+  # ---------------------------------------------------------------------------
+  # Orphaned Resources Monitoring
+  # ---------------------------------------------------------------------------
+  orphanedResources:
+    warn: true
+    ignore: []

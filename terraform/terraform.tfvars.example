@@ -1,0 +1,22 @@
+# =============================================================================
+# Development Environment Configuration
+# =============================================================================
+# Copy this file to terraform.tfvars and customize for your environment.
+# Do NOT commit terraform.tfvars to version control.
+# =============================================================================
+
+# General
+project_name = "cloud-native-ops"
+environment  = "dev"
+aws_region   = "us-east-1"
+
+# VPC
+vpc_cidr = "10.0.0.0/16"
+
+# EKS
+eks_cluster_version     = "1.29"
+eks_node_instance_types = ["t3.medium"]
+eks_node_capacity_type  = "SPOT"    # Cost-effective for dev/staging
+eks_node_desired_size   = 2
+eks_node_min_size       = 1
+eks_node_max_size       = 4

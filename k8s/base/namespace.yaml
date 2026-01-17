@@ -1,0 +1,11 @@
+# =============================================================================
+# Cloud-Native-Ops-Starter - Namespace
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloud-native-ops
+  labels:
+    app.kubernetes.io/name: cloud-native-ops
+    app.kubernetes.io/managed-by: argocd
