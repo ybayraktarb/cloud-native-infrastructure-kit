@@ -7,7 +7,7 @@ software delivery lifecycle (SDLC) practices.
 
 import os
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
@@ -36,10 +36,10 @@ app = FastAPI(
     response_class=JSONResponse,
     tags=["Root"],
 )
-async def root() -> Dict[str, str]:
+async def root() -> dict[str, str]:
     """
     Root endpoint returning application metadata.
-    
+
     Returns:
         dict: Application metadata containing name, version, description, and maintainer.
     """
@@ -58,14 +58,14 @@ async def root() -> Dict[str, str]:
     response_class=JSONResponse,
     tags=["Health"],
 )
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """
     Production-ready health check endpoint for Kubernetes probes.
-    
+
     This endpoint is designed for:
     - Liveness probes: Verify the service is running
     - Readiness probes: Verify the service is ready to accept traffic
-    
+
     Returns:
         dict: Health status with timestamp and version information.
     """
@@ -86,12 +86,12 @@ async def health_check() -> Dict[str, Any]:
     response_class=JSONResponse,
     tags=["API v1"],
 )
-async def system_status() -> Dict[str, Any]:
+async def system_status() -> dict[str, Any]:
     """
     System status endpoint providing operational metrics and service information.
-    
+
     Simulates a real service by returning environment and runtime details.
-    
+
     Returns:
         dict: Comprehensive system status information.
     """
@@ -129,13 +129,13 @@ async def system_status() -> Dict[str, Any]:
     status_code=status.HTTP_200_OK,
     tags=["Health"],
 )
-async def readiness_check() -> Dict[str, str]:
+async def readiness_check() -> dict[str, str]:
     """
     Readiness probe endpoint for Kubernetes.
-    
+
     Separate from liveness to allow for graceful startup and shutdown.
     In production, this would check database connections, cache availability, etc.
-    
+
     Returns:
         dict: Readiness status.
     """
@@ -150,12 +150,12 @@ async def readiness_check() -> Dict[str, str]:
     status_code=status.HTTP_200_OK,
     tags=["Health"],
 )
-async def liveness_check() -> Dict[str, str]:
+async def liveness_check() -> dict[str, str]:
     """
     Liveness probe endpoint for Kubernetes.
-    
+
     Minimal check to verify the process is running and responsive.
-    
+
     Returns:
         dict: Liveness status.
     """
