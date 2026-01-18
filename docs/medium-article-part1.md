@@ -124,20 +124,20 @@ resource "aws_subnet" "private" {
 - Kubernetes-specific tags enable automatic subnet discovery by AWS Load Balancer Controller
 - Separate tagging for external (`elb`) vs internal (`internal-elb`) load balancers
 
-### EKS Spot Instance Configuration
+### EKS Node Group Configuration
 
-Spot Instances provide up to 90% cost savings compared to On-Demand:
+We use On-Demand instances for production reliability:
 
 ```hcl
-# EKS Managed Node Group with Spot Instances
+# EKS Managed Node Group with On-Demand Instances
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "${var.project_name}-${var.environment}-node-group"
   node_role_arn   = aws_iam_role.node_group.arn
   subnet_ids      = var.private_subnet_ids
 
-  # Spot Instance Configuration
-  capacity_type  = "SPOT"  # Key setting for cost optimization
+  # On-Demand for production reliability
+  capacity_type  = "ON_DEMAND"
   instance_types = ["t3.medium"]
 
   scaling_config {
@@ -148,7 +148,6 @@ resource "aws_eks_node_group" "main" {
 
   labels = {
     Environment = var.environment
-    NodeType    = "spot"
   }
 
   lifecycle {
@@ -158,53 +157,44 @@ resource "aws_eks_node_group" "main" {
 ```
 
 **Configuration Highlights:**
-- `capacity_type = "SPOT"` enables Spot pricing
+- `capacity_type = "ON_DEMAND"` ensures reliable, uninterrupted workloads
 - `t3.medium` provides good balance of cost and capability
 - `lifecycle` block prevents Terraform from fighting with autoscaler
-- Labels enable node selection in Kubernetes manifests
+- Multi-AZ deployment for high availability
 
 ---
 
-## Challenge & Solution: Cost Optimization with Spot Instances
+## Challenge & Solution: Cost Optimization Strategies
 
 ### The Challenge
 
-Running Kubernetes on AWS can be expensive. A typical 3-node `t3.medium` cluster costs approximately:
-
-| Type | Hourly | Monthly (730h) |
-|------|--------|----------------|
-| On-Demand | $0.1248 | ~$273 |
-| Spot | ~$0.0125 | ~$27 |
-| **Savings** | - | **~90%** |
+Running Kubernetes on AWS requires balancing cost with reliability. A typical 3-node `t3.medium` cluster costs approximately ~$273/month.
 
 ### The Solution
 
-**1. Use Spot Instances for Non-Critical Workloads**
+**1. Right-Sizing Instances**
 
-EKS managed node groups handle Spot interruption gracefully:
-- 2-minute warning before termination
-- Automatic pod rescheduling
-- No single point of failure with multi-AZ deployment
+Choose instance types based on actual workload requirements:
+- Start with `t3.medium` for general workloads
+- Monitor with CloudWatch and adjust as needed
+- Use Cluster Autoscaler for dynamic scaling
 
-**2. Instance Type Diversification**
+**2. Reserved Instances / Savings Plans**
 
-For production, consider multiple instance types:
+For predictable workloads, AWS offers significant discounts:
 
-```hcl
-instance_types = ["t3.medium", "t3a.medium", "t2.medium"]
-```
+| Commitment | Savings |
+|------------|--------|
+| 1-Year Reserved | ~30% |
+| 3-Year Reserved | ~50% |
+| Compute Savings Plan | ~30% |
 
-This increases Spot capacity availability and reduces interruption probability.
+**3. Multi-AZ Deployment**
 
-**3. Mixed Capacity Strategy**
-
-For critical workloads, combine On-Demand and Spot:
-
-```hcl
-# Separate node groups for different workload types
-# On-Demand for stateful/critical services
-# Spot for stateless/batch workloads
-```
+Our architecture distributes nodes across 3 availability zones:
+- High availability without additional cost
+- Automatic failover
+- No single point of failure
 
 ---
 

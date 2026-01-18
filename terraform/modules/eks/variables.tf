@@ -36,7 +36,7 @@ variable "node_instance_types" {
 variable "node_capacity_type" {
   description = "Capacity type for nodes: ON_DEMAND or SPOT"
   type        = string
-  default     = "SPOT"
+  default     = "ON_DEMAND"
 }
 
 variable "node_desired_size" {
