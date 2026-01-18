@@ -20,3 +20,11 @@ eks_node_capacity_type  = "SPOT"    # Cost-effective for dev/staging
 eks_node_desired_size   = 2
 eks_node_min_size       = 1
 eks_node_max_size       = 4
+
+# Bastion Host
+# REQUIRED: Create a key pair in AWS Console and enter its name here
+bastion_key_name                = "your-aws-key-pair-name"
+# SECURITY: Restrict SSH access to your IP address (e.g., "203.0.113.0/32")
+bastion_allowed_ssh_cidr_blocks = ["YOUR.PUBLIC.IP.HERE/32"]
+bastion_instance_type           = "t3.micro"
+bastion_enable_elastic_ip       = false

@@ -112,6 +112,25 @@ module "eks" {
 }
 
 # -----------------------------------------------------------------------------
+# Bastion Host Module
+# -----------------------------------------------------------------------------
+module "bastion" {
+  source = "./modules/bastion"
+
+  project_name     = var.project_name
+  environment      = var.environment
+  vpc_id           = module.vpc.vpc_id
+  public_subnet_id = module.vpc.public_subnet_ids[0]
+
+  key_name                = var.bastion_key_name
+  allowed_ssh_cidr_blocks = var.bastion_allowed_ssh_cidr_blocks
+  instance_type           = var.bastion_instance_type
+  enable_elastic_ip       = var.bastion_enable_elastic_ip
+
+  tags = local.common_tags
+}
+
+# -----------------------------------------------------------------------------
 # Local Values
 # -----------------------------------------------------------------------------
 locals {

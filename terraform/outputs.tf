@@ -79,3 +79,21 @@ output "aws_account_id" {
   description = "AWS Account ID"
   value       = data.aws_caller_identity.current.account_id
 }
+
+# -----------------------------------------------------------------------------
+# Bastion Host Outputs
+# -----------------------------------------------------------------------------
+output "bastion_public_ip" {
+  description = "Public IP address of the bastion host"
+  value       = module.bastion.public_ip
+}
+
+output "bastion_security_group_id" {
+  description = "Security group ID of the bastion host"
+  value       = module.bastion.security_group_id
+}
+
+output "ssh_to_bastion" {
+  description = "SSH command to connect to bastion host"
+  value       = module.bastion.ssh_command
+}

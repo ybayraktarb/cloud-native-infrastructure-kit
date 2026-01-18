@@ -80,3 +80,29 @@ variable "eks_node_max_size" {
   type        = number
   default     = 4
 }
+
+# -----------------------------------------------------------------------------
+# Bastion Host Configuration
+# -----------------------------------------------------------------------------
+variable "bastion_key_name" {
+  description = "Name of the AWS key pair for SSH access to bastion. Create this in AWS Console first."
+  type        = string
+}
+
+variable "bastion_allowed_ssh_cidr_blocks" {
+  description = "List of CIDR blocks allowed to SSH to bastion. Restrict to your IP for security."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "bastion_instance_type" {
+  description = "EC2 instance type for bastion host"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "bastion_enable_elastic_ip" {
+  description = "Whether to assign an Elastic IP to bastion host for static public IP"
+  type        = bool
+  default     = false
+}
