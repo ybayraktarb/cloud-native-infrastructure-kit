@@ -7,7 +7,7 @@
 
 ## 🏗️ Architecture
 
-![Cloud-Native Architecture]![Uploading Cloud-Native Architecture.png…]()
+![Cloud-Native Architecture](./Cloud-Native%20Architecture.png)
 
 
 <details>
