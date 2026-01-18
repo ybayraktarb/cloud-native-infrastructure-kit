@@ -160,3 +160,4 @@ async def liveness_check() -> dict[str, str]:
         dict: Liveness status.
     """
     return {"status": "alive"}
+    
